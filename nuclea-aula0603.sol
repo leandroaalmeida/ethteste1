@@ -6,6 +6,7 @@ pragma solidity 0.8.19;
 
 /// @author Leandro Almeida
 /// @title Um exemplo de Amizades
+/// endereço do contrato: 0xA6e3B518087d1b76dE39167A6d5664B9beB51Af2
 contract Amizades {
 
     mapping(address=>mapping(address => uint8)) public amizades;
