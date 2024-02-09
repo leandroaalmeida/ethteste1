@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
  * @dev Operacoes de uma debenture
  * @author Jeff Prestes
  */
-// endereco do contrato 0x9ddCA6462A571e6CD85A21FcC79F77D3D574f64d
+// endereco 0x9ddCA6462A571e6CD85A21FcC79F77D3D574f64d
 /*
 SPDX-License-Identifier: GPL-3.0
 (c) Desenvolvido por Jeff Prestes
@@ -128,7 +128,7 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
     uint256 public decimals;
     uint256 _prazoPagamento;
     string public rating;
-    uint256 _valor;
+    uint256 myTotalSupply;
 
     mapping (address=>uint256) balances;    
     mapping (address=>mapping (address=>uint256)) ownerAllowances;
@@ -144,17 +144,16 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
     }
     modifier tokenAmountValid(uint256 amount) {
         require(amount > 0);
-        require(amount <= _valor);
+        require(amount <= myTotalSupply);
         _;
     }
     constructor(string memory emissor_) {
         _emissor = emissor_;
         _dataEmissao = block.timestamp;
-        _valor = 0;
         decimals = 2;
         _prazoPagamento = _dataEmissao + 90 days;
         rating = "BBB-";
-        mint(msg.sender, 100000000);
+        mint(msg.sender, (1000000000 * (10 ** decimals)));
         emit NovoPrazoPagamento(_dataEmissao, _prazoPagamento);
     }
 
@@ -167,7 +166,7 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
     }
 
     function totalSupply() public override view returns(uint256) {
-        return _valor;
+        return myTotalSupply;
     }
 
     function balanceOf(address tokenOwner) public override view returns(uint256) {
@@ -204,7 +203,7 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
     function mint(address account, uint256 amount) public onlyOwner returns (bool) {
         require(account != address(0), "ERC20: mint to the zero address");
 
-        _valor = _valor + amount;
+        myTotalSupply = myTotalSupply + amount;
         balances[account] = balances[account] + amount;
         emit Transfer(address(0), account, amount);
         return true;
@@ -213,10 +212,10 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
     function burn(address account, uint256 amount) public onlyOwner returns (bool) {
         require(account != address(0), "ERC20: burn from address");
 
-        require((_valor - amount)>=100, "numero de fracoes baixo");
+        require((myTotalSupply - amount)>=100, "numero de fracoes baixo");
 
         balances[account] = balances[account] - amount;
-        _valor = _valor - amount;
+        myTotalSupply = myTotalSupply - amount;
         emit Transfer(account, address(0), amount);
         return true;
     }
@@ -225,7 +224,7 @@ contract Debenture is IERC20, Ownable, TokenComPrazo {
      * @dev Retorna o valor nominal.
      */
     function valorNominal() external view returns (uint256) {
-        return _valor;
+        return myTotalSupply;
     }
 
     /**
