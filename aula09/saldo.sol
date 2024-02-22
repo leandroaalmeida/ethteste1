@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// 0x40A53760F82BFe477d482e4753a983d0e95cfa9F
+//0x79D92f0dD949b0DAAc8EFCB43Cb3f684115dF7E2
+contract Saldo {
+
+    function obtemSaldo(address token_, address account_)  public view returns (uint256) {
+        IERC20 token = IERC20(token_);
+        return token.balanceOf(account_);
+    }
+
+    function obtemSaldoMoeda(address account_) public view returns (uint256) {
+        return account_.balance;
+    }
+}
+
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
@@ -75,16 +87,4 @@ interface IERC20 {
      * Emits a {Transfer} event.
      */
     function transferFrom(address from, address to, uint256 value) external returns (bool);
-}
-
-contract Saldo {
-
-    function obtemSaldo(address token_, address account_)  public view returns (uint256) {
-        IERC20 token = IERC20(token_);
-        return token.balanceOf(account_);
-    }
-
-    function obtemSaldoMoeda(address account_) public view returns (uint256) {
-        return account_.balance;
-    }
 }
